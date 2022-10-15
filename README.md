@@ -61,7 +61,78 @@ Dynamic DNS (DDNS) is a service that regularly checks the external IP of the ser
 If you don't own a domain there are free DDNS service providers. If you already use a Domain registrar, check if they offer a DDNS tool or API.
 
 # Example setup on Ubuntu 20.04 LTS
-This is a beginner-friendly minimalist setup withou a graphical Torrent client and without any media server. If you succeed setting this up feel free to dabble in how to set up the media server of your choice (fuck Plex, all my homies hate Plex) or a UI for managing torrents in your browser (e.g. rTorrent, Transmission).
+This is a beginner-friendlyish minimalist setup withou a graphical Torrent client and without any media server. If you succeed setting this up feel free to dabble in how to set up the media server of your choice (fuck Plex, all my homies hate Plex) or a UI for managing torrents in your browser (e.g. rTorrent, Transmission).
+1. Create your server
+2. Connect to the server using SSH
+```bash
+   ssh root@<IPv4>
+```
+3. Run a system update and install a few required packages
+```bash
+   apt update -y && apt upgrade -y && apt install ncdu deluged deluge-console -y && reboot
+```
+4. Generate SSH keys. Open your terminal and run 
+```bash
+   ssh-keygen -t rsa
+```
+5. Copy your public SSH key to your server
+```bash
+   ssh-copy-id -i ~/.ssh/id_rsa.pub root@<IPv4>
+```
+6. Connect to your server
+7. Once you're in the server again, reconfigure SSH to make your server more secure
+	1. Open /etc/ssh/sshd_config
+	2. Set **PermitRootLogin** to **prohibit-password**
+	3. Set **PasswordAuthentication** to **no**
+	4. Save your changes and reboot the server or restart the SSH service 
+8. Connect to your server. If you are locked out at this point, start over
+9. Set up your DDNS script/tool. If it does not automatically refresh your DNS records you will have to configure a regular run using crontab. You do not have to restart any service or reboot the server for this change to be applied. If you plan to run multiple seedboxes it is ideal to assign a subdomain to each seedbox
+	1. Open /etc/crontab
+	2. To refresh every 5 minutes add the line 
+	```bash
+	   0,5,15,20,25,30,35,40,45,50,55 * * * * root <Your_Command>
+	```
+10. Check if your DNS records have been updated. If so, try connecting to the server using your domain
+```bash
+   ssh root@<subdomain>.<domain>
+```
+11. Request a port to be forwarded through your VPN provider. Go into /etc/ssh/sshd_config and make sure to uncomment the line **Port 22** and change the number to the port you were assigned. Afterwards, reboot or restart the ssh service
+12. Try connecting to your server using your domain as well as the custom port
+```bash
+   ssh root@<subdomain>.<domain> -p <Custom_Port>
+```
+13. Install and connect to your VPN. Close your frozen terminal and open a new one
+14. Wait until the next 5 minute mark (and maybe give it an extra minute), then try connecting the same way you did in step 12. If this works, congrats, you completed the hard part
+15. For our minimalist torrenting setup we use the CLI based tool deluge-console. First we need to tweak the daemon a bit. Official instructions can be found [here](https://dev.deluge-torrent.org/wiki/UserGuide/ThinClient)
+	1. Disable the deluge daemon. That way your torrenting will not automatically resume if your VPS happens to reboot without your knowledge, and without auto-connecting to your VPN
+	```bash
+	   systemctl disable deluged
+	```
+	2. Check if the service is active, otherwise start it
+	```bash
+	   systemctl status deluged
+	   systemctl start deluged
+	```
+	3. Start an instance of it (for some reason it's not enough for the service to be active)
+	```bash
+	   deluged
+	```
+	4. Open the CLI by running
+	```bash
+	   deluge-console
+	```
+	5. Make sure the IP on the bottom is **NOT** the same as that of your VPS
+![deluge console example](./deluge-console-ip.png)
+ That's it. Have fun torrenting and don't forget to maintain a ratio of >2. If you need to use torrent files instead of magnet links you can upload them using sftp, using the same custom port as for SSH. To download files from the server to your device, use sftp as well.
+ 
+ If you want to continue installing more utils, keep in mind that you will need to request an additional port from your VPN provider for each service you use. For internal port forwarding from port X to port Y, which your application listens to, you can use
+```bash
+   iptables -t nat -A PREROUTING -i eth0 -p tcp -m tcp --dport <X> -j REDIRECT --to-ports <Y>
+```
+To list internal port forwarding rules use 
+```bash
+   iptables -t nat --list
+```
 
 
 # Common issues
