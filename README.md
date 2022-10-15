@@ -27,7 +27,7 @@ In addition to installing and configuring the seedbox on a VPS, this type of see
 
 ## Overview of the network structure and why it gets complicated
 
-Normally you interact with your VPS using it's URL/hostname and the relevant port for whatever you're doing. This is very straightforward and what most of you already are familiar with.
+Normally you interact with your VPS using it's URL/hostname and the relevant port for whatever you're doing. This is very straightforward and what most of you are already familiar with.
 ![classic](./Classic_VPS_Communication.drawio.png)
 
 If you want to route all of the VPS traffic through a VPN this adds a middle layer and several complications
