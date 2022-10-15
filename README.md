@@ -25,7 +25,7 @@ In addition to installing and configuring the seedbox on a VPS, this type of see
 
 **This is the safest option which allows you to torrent without worrying at all, but it also has the biggest limitations.** First of all you are dependent on port-forwarding through your VPN (more on that later) which makes most bundled seedbox solutions unviable. In addition to that since all of your traffic goes through a VPN, this will be your bottleneck. It might make more sense to host several small seedboxes of this type, instead of one beefy seedbox. These two factors also make it less convenient to stream directly from your seedbox on a personal device.
 
-## Overview the network structure and why it gets complicated
+## Overview of the network structure and why it gets complicated
 
 Normally you interact with your VPS using it's URL/hostname and the relevant port for whatever you're doing. This is very straightforward and what most of you already are familiar with.
 ![classic](./Classic_VPS_Communication.drawio.png)
