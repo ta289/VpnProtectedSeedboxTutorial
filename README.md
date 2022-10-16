@@ -52,7 +52,7 @@ A good VPN comparison can be found [here](https://techlore.tech/vpn). Not all of
 You need a VPS provider that
 * doesn't prohibit P2P traffic
 * offers storage focused products
-Since your bottleneck is going to be your upload/download speed forget about renting SSD machines. Go with cheap HDD storage, multiple CPU cores and some decent bandwidth. Interserver and Nexusbytes offer good value for money in this case, though do your own research since these things change quickly.
+Since your bottleneck is going to be your upload/download speed forget about renting SSD machines. Go with cheap HDD storage, multiple CPU cores and some decent bandwidth. Interserver offers good value for money in this case, though do your own research since these things change quickly.
 
 
 ### DDNS provider or a Domain registrar with DDNS support
