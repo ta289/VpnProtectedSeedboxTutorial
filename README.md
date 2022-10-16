@@ -61,7 +61,7 @@ Dynamic DNS (DDNS) is a service that regularly checks the external IP of the ser
 If you don't own a domain there are free DDNS service providers. If you already use a Domain registrar, check if they offer a DDNS tool or API.
 
 # Example setup on Ubuntu 20.04 LTS
-This is a beginner-friendlyish minimalist setup withou a graphical Torrent client and without any media server. If you succeed setting this up feel free to dabble in how to set up the media server of your choice (fuck Plex, all my homies hate Plex) or a UI for managing torrents in your browser (e.g. rTorrent, Transmission).
+This is a beginner-friendlyish minimalist setup withou a graphical Torrent client and without any media server. If you succeed setting this up feel free to dabble in how to set up the media server of your choice (fuck Plex, all my homies hate Plex. Jellyfin is pretty good and easy to set up though) or a UI for managing torrents in your browser (e.g. rTorrent, Transmission).
 1. Create your server
 2. Connect to the server using SSH
 ```bash
