@@ -133,7 +133,7 @@ To list internal port forwarding rules use
 ```bash
    iptables -t nat --list
 ```
-
+Keep in mind that this only works as a one-sided solution, since POSTROUTING requires you to specify a target IP. If your util requires two-sided communication look up how to change its default port instead.
 
 # Common issues
 
