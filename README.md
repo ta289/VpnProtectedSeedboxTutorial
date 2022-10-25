@@ -52,6 +52,7 @@ A good VPN comparison can be found [here](https://techlore.tech/vpn). Not all of
 You need a VPS provider that
 * doesn't prohibit P2P traffic (go to their TOS, search for "Torrent", "P2P" and "Peer")
 * offers storage focused products (NOT storage blocks, I'm talking about storage focussed VPS with their own CPUs and RAM)
+
 Since your bottleneck is going to be your upload/download speed forget about renting SSD machines. Go with cheap HDD storage, multiple CPU cores and some decent bandwidth. If you haven't mastered the deployment for your case yet, you should start off with a well known VPS provider that bills per minute and offers quick server resets. Once you got that down, Interserver offers good value for money for hosting a seedbox in the long term, though do your own research since these things change quickly.
 
 
@@ -60,8 +61,8 @@ Dynamic DNS (DDNS) is a service that regularly checks the external IP of the ser
 
 If you don't own a domain there are free DDNS service providers. If you already use a Domain registrar, check if they offer a DDNS tool or API.
 
-# Example setup on Ubuntu 20.04 LTS
-This is a beginner-friendlyish minimalist setup withou a graphical Torrent client and without any media server. If you succeed setting this up feel free to dabble in how to set up the media server of your choice (fuck Plex, all my homies hate Plex. Jellyfin is pretty good and easy to set up though) or a UI for managing torrents in your browser (e.g. rTorrent, Transmission).
+# Minimalist setup on Ubuntu 20.04 LTS & 22.04 LTS
+This is a beginner-friendlyish minimalist setup withou a graphical Torrent client and without any media server. If you succeed setting this up feel free to dabble in how to set up the media server of your choice (fuck Plex, all my homies hate Plex. Jellyfin is pretty good and easy to set up though) or a UI for managing torrents from your main device.
 1. Create your server
 2. Connect to the server using SSH
 ```bash
@@ -69,7 +70,7 @@ This is a beginner-friendlyish minimalist setup withou a graphical Torrent clien
 ```
 3. Run a system update and install a few required packages
 ```bash
-   apt update -y && apt upgrade -y && apt install ncdu deluged deluge-console -y && reboot
+   apt update -y && apt upgrade -y && apt install ncdu speedtest-cli deluged deluge-console -y && reboot
 ```
 4. Generate SSH keys. Open your terminal and run 
 ```bash
@@ -96,14 +97,18 @@ This is a beginner-friendlyish minimalist setup withou a graphical Torrent clien
 ```bash
    ssh root@<subdomain>.<domain>
 ```
-11. Request a port to be forwarded through your VPN provider. Go into /etc/ssh/sshd_config and make sure to uncomment the line **Port 22** and change the number to the port you were assigned. Afterwards, reboot or restart the ssh service
+11. Request a port to be forwarded through your VPN provider, which you wil use for ssh and sftp. Go into /etc/ssh/sshd_config and make sure to uncomment the line **Port 22** and change the number to the port you were assigned. Afterwards, reboot or restart the ssh service
 12. Try connecting to your server using your domain as well as the custom port
 ```bash
    ssh root@<subdomain>.<domain> -p <Custom_Port>
 ```
 13. Install and connect to your VPN. Close your frozen terminal and open a new one
 14. Wait until the next 5 minute mark (and maybe give it an extra minute), then try connecting the same way you did in step 12. If this works, congrats, you completed the hard part
-15. For our minimalist torrenting setup we use the CLI based tool deluge-console. First we need to tweak the daemon a bit. Official instructions can be found [here](https://dev.deluge-torrent.org/wiki/UserGuide/ThinClient)
+15. Run the following command to get a benchmark for your upload/download speed. You are looking for values over 100 Mbit/s. If your speed is lower, try out a different VPN location
+```bash
+   speedtest-cli --secure
+```
+16. For our minimalist torrenting setup we use the CLI based tool deluge-console. First we need to tweak the daemon a bit. Official instructions can be found [here](https://dev.deluge-torrent.org/wiki/UserGuide/ThinClient)
 	1. Disable the deluge daemon service. That way your torrenting will not automatically resume if your VPS happens to reboot without your knowledge, and without auto-connecting to your VPN. Disabling the service does not stop it
 	```bash
 	   systemctl disable deluged
@@ -134,6 +139,31 @@ To list internal port forwarding rules use
    iptables -t nat --list
 ```
 Keep in mind that this only works as a one-sided solution, since POSTROUTING requires you to specify a target IP. If your util requires two-sided communication look up how to change its default port instead.
+
+# Remote Torrent Administration
+1. Request a port to be forwarded through your VPN provider, which you wil use for the deluge client
+2. Go into **~/.config/deluge/core.conf** as well as **~/.config/deluge/hostlist.conf** and replace the daemon's port 58849 with the new forwarded port
+3. To torrent as a non-admin user, add a new user in **~/.config/deluge/auth** with the level 5
+4. Kill all instances of deluged, restart the service, then start up an instance of deluged
+```bash
+   killall deluged
+   systemctl restart deluged.service
+   deluged
+```
+5. Install the Deluge Client on your main device, goto Edit → Preferences → Interface and switch to Thin Client
+6. After restarting the client enter your server URL, port, deluge user and password
+
+# Jellyfin Media Server Setup
+1. Request a port to be forwarded through your VPN provider, which you wil use for Jellyfin
+2. Do the initial steps as described [here](https://jellyfin.org/docs/general/administration/installing/#ubuntu)
+3. Create media folders (e.g. /opt/jellyfin/Movies), since jellyfin can't access /root/Downloads, which Deluge uses by default
+4. Make sure you're not connected to a VPN. Open the browser and go to the server's address and port 8096. Create the jellyfin admin user, use a different username than jellyfin for security reasons. Follow the setup guide. Go to Settings → Administration → Dashboard → Advanced → Networking and change the port
+5. Restart the jellyfin service
+```bash
+   systemctl restart jellyfin.service
+```
+6. When adding new Torrents make sure to pick the download folder accordingly. Moving a finished torrent to a new location can take some time if it's a large torrent
+7. Install a Jellyfin client on any device you want to stream to
 
 # Common issues
 
