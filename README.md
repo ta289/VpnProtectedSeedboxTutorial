@@ -143,8 +143,9 @@ Keep in mind that this only works as a one-sided solution, since POSTROUTING req
 # Remote Torrent Administration
 1. Request a port to be forwarded through your VPN provider, which you wil use for the deluge client
 2. Go into **~/.config/deluge/core.conf** as well as **~/.config/deluge/hostlist.conf** and replace the daemon's port 58849 with the new forwarded port
-3. To torrent as a non-admin user, add a new user in **~/.config/deluge/auth** with the level 5
-4. Kill all instances of deluged, restart the service, then start up an instance of deluged
+3. In **~/.config/deluge/core.conf** also set the flag **allow_remote** to true
+4. To torrent as a non-admin user, add a new user in **~/.config/deluge/auth** with the level 5
+5. Kill all instances of deluged, restart the service, then start up an instance of deluged
 ```bash
    killall deluged
    systemctl restart deluged.service
